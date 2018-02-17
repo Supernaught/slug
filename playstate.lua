@@ -13,6 +13,8 @@ local Square = require "alphonsus.square"
 local Player = require "entities.player"
 local Bullet = require "entities.bullet"
 local Enemy = require "entities.enemy"
+local GroundEnemy = require "entities.enemies.groundEnemy"
+local FlyingEnemy = require "entities.enemies.flyingEnemy"
 local TileMap = require "alphonsus.tilemap"
 
 local PlayState = Scene:extend()
@@ -33,37 +35,26 @@ function PlayState:enter()
 	scene = self
 	self.bumpWorld = bump.newWorld()
 
-	self.bgColor = {55,25,50}
+	self.bgColor = {20, 20, 20}
 
 	-- setup tile map
-	tileMap = TileMap("assets/maps/map.lua", nil, nil, self.bumpWorld)
-	self:addEntity(tileMap)
+	self.tileMap = TileMap("assets/maps/test.lua", nil, nil, self.bumpWorld)
+	self:addEntity(self.tileMap)
 
-	-- setup players
-	player = Player(100, 50, 1)
-	player2 = Player(50, 50, 2)
-
+	-- setup player
+	player = Player(self.tileMap.width/2, 50, 1)
 	self:addEntity(player)
-	-- self:addEntity(player2)
 
-	middlePoint = GameObject(getMiddlePoint(player.pos, player2.pos),0,0)
-	middlePoint.collider = nil
-	
-	-- spawn random tiles
-	-- for i=10,30 do
-	-- 	self:addEntity(Square(i * G.tile_size, 10 * G.tile_size))
-	-- end
-	-- self:addEntity(Square(10 * G.tile_size, 12 * G.tile_size))
-	-- self:addEntity(Square(11 * G.tile_size, 8 * G.tile_size))
-	-- self:addEntity(Square(10 * G.tile_size, 8 * G.tile_size))
-
-	-- add sample enemy
-	-- self:addEntity(Enemy(14 * G.tile_size, 7 * G.tile_size))
+	-- add sample enenmy
+	self:addEntity(FlyingEnemy(-10, 100))
+	-- self:addEntity(FlyingEnemy(self.tileMap.width+16, 100))
+	-- self:addEntity(GroundEnemy(80, 100))
 
 	-- setup camera
-	self.camera:setPosition(middlePoint.pos.x, middlePoint.pos.y)
 	self.camera:startFollowing(player)
 	self.camera.followSpeed = 5
+	-- print(tileMap.width * G.tile_size, tileMap.height * G.tile_size)
+	self.camera.cam:setWorld(0,0,(self.tileMap.map.width) * G.tile_size, self.tileMap.map.height * G.tile_size)
 
 	-- setup shaders
 	PaletteSwitcher.init('assets/img/palettes.png', 'alphonsus/shaders/palette.fs');
@@ -77,39 +68,12 @@ end
 function PlayState:stateUpdate(dt)
 	PlayState.super.stateUpdate(self, dt)
 
-	local x, y = getMiddlePoint(player.pos, player2.pos)
-	middlePoint.pos.x = x
-	middlePoint.pos.y = y
-
-	local d = _.distance(player.pos.x, player.pos.y, player2.pos.x, player2.pos.y)
-
-	-- self.camera.zoom = 1
-	-- if d > G.height then
-	-- 	self.camera.zoom = 0.8
-	-- end
-
-	-- if d > G.height * 1.5 then
-	-- 	self.camera.zoom = 0.6
-	-- end
-
 	if Input.wasKeyPressed('`') then
 		G.debug = not G.debug
  	end
 
  	if Input.wasKeyPressed('r') then
 		Gamestate.switch(self)
-	end
-
-	-- if Input.wasKeyPressed('z') then
-	-- 	player:jump()
-	-- end
-
-	if Input.wasPressed('zoomIn') then
-		self.camera.zoom = self.camera.zoom + 1
-	end
-
-	if Input.wasPressed('zoomOut') then
-		-- self.camera.zoom = self.camera.zoom-1
 	end
 end
 

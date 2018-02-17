@@ -18,14 +18,13 @@ function Square:new(x, y, color, w, h)
 		ox = 0,
 		oy = 0
 	}
-	self.nonCollidableTags = {"isSquare"}
 
 	return self
 end
 
 function Square:draw()
 	love.graphics.setColor(self.color)
-	love.graphics.rectangle("fill", self.pos.x, self.pos.y, self.width, self.height)
+	love.graphics.rectangle("fill", self.pos.x - self.offset.x, self.pos.y - self.offset.y, self.width, self.height)
 	love.graphics.setColor(255,255,255)
 end
 

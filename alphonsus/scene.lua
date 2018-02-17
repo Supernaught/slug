@@ -19,6 +19,7 @@ local platformerMovableSystem = require "alphonsus.systems.platformerMovableSyst
 local topdownMovableSystem = require "alphonsus.systems.topdownMovableSystem"
 local moveTowardsAngleSystem = require "alphonsus.systems.moveTowardsAngleSystem"
 local moveTowardsPositionSystem = require "alphonsus.systems.moveTowardsPositionSystem"
+local shooterSystem = require "alphonsus.systems.shooterSystem"
 
 local Camera = require "alphonsus.camera"
 local Input = require "alphonsus.input"
@@ -66,11 +67,9 @@ function Scene:update(dt)
 		updateSystem(e, e, dt)
 		moveTowardsAngleSystem(e, e, dt)
 		moveTowardsPositionSystem(e, e, dt)
-		if G.platformer then
-			platformerMovableSystem(e, e, dt)
-		else
-			topdownMovableSystem(e, e, dt)
-		end
+		platformerMovableSystem(e, e, dt)
+		topdownMovableSystem(e, e, dt)
+		shooterSystem(e, e, dt)
 		collisionSystem(e, e, self.bumpWorld)
 		removeSystem(e, i, self.entities, self.bumpWorld)
 	end
@@ -131,6 +130,12 @@ end
 -- ====================================
 --          HELPER FUNCTIONS
 -- ====================================
+function Scene:getObject(tag)
+	return _.filter(self.entities, function(e)
+		return e[tag] == true
+	end)
+end
+
 function Scene:getNearestEntityFromSource(source, maxDistance, tag)
 	-- get visible entities except source
 	local filteredEntities = _.reject(self.entities, function(e)

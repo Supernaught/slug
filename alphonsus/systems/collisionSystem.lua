@@ -35,8 +35,7 @@ local collisionSystem = System(
 			local col = cols[i]
 			local col1, col2 = col.item, col.other
 
-			-- if col1.platformer
-			if col1.platformer then
+			if col1.platformer and col2.isTile then
 				local p = col1.platformer
 
 				if col.normal.x ~= 0 and not (col2.isSlope or col2.isOneWay) then
@@ -52,26 +51,19 @@ local collisionSystem = System(
 					col1.movable.velocity.y = 0
 				end
 				if p.isGrounded and not p.wasGrounded then
-					if col1.onLand() then col1.onLand() end
+					if col1.onLand then col1.onLand() end
 				end
 			end
 
-			if col1.collide then col1:collide(col2, col) end
-			if col2.collide then col2:collide(col1, col) end
+			if col1.collide and not col1.toRemove then col1:collide(col2, col) end
+			if col2.collide and not col2.toRemove then col2:collide(col1, col) end
 		end
 	end
 )
 
 function collisionFilter(item, other)
-	-- if item.collisionFilter then
-	-- 	return item:collisionFilter(other)
-	-- end
-
-	if item.isSolid then
-		if other.isSlope then return "cross" end
-		if other.isOneWay then return "onewayplatform" end
-		if other.isSolid then return "slide" end
-		return "cross"
+	if item.collisionFilter then
+		return item:collisionFilter(other)
 	end
 
 	return "cross"

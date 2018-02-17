@@ -1,7 +1,7 @@
 G = {
   title = "Game Title",
-  width = 360,
-  height = 240,
+  width = 18 * 16,
+  height = 14 * 16,
   scale = 3,
   tile_size = 16,
   fullscreen = true,
@@ -9,7 +9,7 @@ G = {
   debug = false,
 
   platformer = true,
-  gravity = -1200,
+  gravity = -160,
 
   layers = {
     bg         = 100,

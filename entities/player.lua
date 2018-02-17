@@ -5,6 +5,7 @@ local anim8 = require "lib.anim8"
 local _ = require "lib.lume"
 local assets = require "assets"
 
+local Circle = require "alphonsus.circle"
 local Bullet = require "entities.bullet"
 
 local Player = GameObject:extend()
@@ -18,6 +19,9 @@ function Player:new(x, y, playerNo)
 	self.playerNo = playerNo
 	self.tag = "player"
 
+	-- slugcaster mechanics
+	self.shootAngle = 0
+
 	-- draw/sprite component
 	self.layer = G.layers.player
 	self.isLayerYPos = true
@@ -30,42 +34,46 @@ function Player:new(x, y, playerNo)
 
 	-- physics
 	self.isSolid = true
-	self.direction = Direction.right
 
-	if G.platformer then
-		-- platformer setup
-		local maxVelocity = 275
-		local speed = maxVelocity * 10
-		local drag = maxVelocity * 4
+	-- platformer setup
+	local speed = 250
+	local maxVelocityX = 140
+	local maxVelocityY = 120
 
-		self.movable = {
-			velocity = { x = 0, y = 0 },
-			acceleration = { x = 0, y = 0 },
-			drag = { x = 3200, y = G.gravity },
-			maxVelocity = { x = 200, y = 350 },
-			speed = { x = 2200, y = 0 } -- used to assign to acceleration
+
+	-- self.friction = 10
+	self.movable = {
+		velocity = {
+			x = 0,
+			y = 0
+		},
+		acceleration = {
+			x = 0,
+			y = 0
+		},
+		drag = {
+			x = 350,
+			y = G.gravity
+		},
+		maxVelocity = {
+			x = maxVelocityX,
+			y = maxVelocityY
+		},
+		defaultMaxVelocity = {
+			x = maxVelocityX,
+			y = maxVelocityY
+		},
+		speed = {
+			x = speed,
+			y = speed
 		}
+	}
 
-		self.platformer = {
-			wasGrounded = false,
-			isGrounded = false,
-			jumpForce = -300,
-		}
-	else
-		-- topdown setup
-		local maxVelocity = 180
-		local speed = maxVelocity * 10
-		local drag = maxVelocity * 20
-
-		-- movable component
-		self.movable = {
-			velocity = { x = 0, y = 0 },
-			acceleration = { x = 0, y = 0 },
-			drag = { x = drag, y = drag },
-			maxVelocity = { x = maxVelocity, y = maxVelocity },
-			speed = { x = speed, y = speed } -- used to assign to acceleration
-		}
-	end
+	self.platformer = {
+		wasGrounded = false,
+		isGrounded = false,
+		jumpForce = -300,
+	}
 
 	-- particles
 	self.trailPs = Particles()
@@ -76,16 +84,23 @@ function Player:new(x, y, playerNo)
 
 	-- collider
 	self.collider = {
-		x = x - self.offset.x,
-		y = y - self.offset.y,
+		x = self.pos.x - self.offset.x,
+		y = self.pos.y + self.offset.y,
 		w = self.width,
 		h = self.height,
-		ox = 0,
-		oy = 0
+		ox = -self.offset.x,
+		oy = -self.offset.y
+	}
+
+	self.collidableTags.cross = { "isEnemy" }
+
+	-- shooter
+	self.shooter = {
+		canAtk = true,
+		atkDelay = 0.1,
+		didShoot = false,
 	}
 	
-	self.collidableTags = {"isEnemy"}
-
 	return self
 end
 
@@ -102,7 +117,6 @@ end
 
 function Player:update(dt)
 	self:moveControls(dt)
-	self:shootControls()
 
 	if self.trailPs then
 		local x, y = self:getMiddlePosition()
@@ -127,35 +141,12 @@ function Player:update(dt)
 	-- end
 end
 
--- function Player:getMidPos()
--- 	return self.pos.x + self.offset.x, self.pos.y + self.offset.y
--- end
-
-function Player:shootControls()
-	-- if Input.wasPressed(self.playerNo .. '_shoot') or Input.wasGamepadButtonPressed('a', self.playerNo) then
-	-- 	self:shoot()
-	-- end
-end
-
-function Player:jump()
-	if self.platformer and self.platformer.isGrounded then
-		self.platformer.isGrounded = false
-		self.movable.velocity.y = self.platformer.jumpForce
-	end
-end
-
 function Player:onLand()
-	tlog.print("LANDED")
 end
 
 function Player:shoot()
-	local angle = (self.direction == Direction.right and 0 or 180)
-	local speed = 150
 	local x, y = self.pos.x, self.pos.y
-	local b = Bullet(x, y, angle, speed, self)
-	b.target = self:getNearestEntity(nil, "enemy")
-	-- if b.target then print(b.target.name) end
-	
+	local b = Bullet(x, y, self.shootAngle, nil, self)
 	scene:addEntity(b)
 end
 
@@ -167,32 +158,73 @@ function Player:moveControls(dt)
 	local right = Input.isDown(self.playerNo .. '_right') or Input.isAxisDown(self.playerNo, 'leftx', '>')
 	local up = Input.isDown(self.playerNo .. '_up') or Input.isAxisDown(self.playerNo, 'lefty', '<')
 	local down = Input.isDown(self.playerNo .. '_down') or Input.isAxisDown(self.playerNo, 'lefty', '>')
-	local rotate = Input.isDown('rotate')
 
-	if rotate then
-		self.angle = self.angle + 10/180
+	-- movement
+	if up and not down then
+		self.movable.acceleration.y = self.movable.speed.y
+	elseif down and not up then
+		self.movable.acceleration.y = -self.movable.speed.y
+	else
+		self.movable.acceleration.y = 0
 	end
-
 	if left and not right then
-		self.movable.acceleration.x = -self.movable.speed.x
+		self.movable.acceleration.x = self.movable.speed.x
 		self.direction = Direction.left
 	elseif right and not left then
-		self.movable.acceleration.x = self.movable.speed.x
+		self.movable.acceleration.x = -self.movable.speed.x
 		self.direction = Direction.right
 	else
 		self.movable.acceleration.x = 0
 	end
 
-	-- if up and not down then
-	-- 	self.movable.acceleration.y = -self.movable.speed.y
-	-- elseif down and not up then
-	-- 	self.movable.acceleration.y = self.movable.speed.y
-	-- else
-	-- 	self.movable.acceleration.y = 0
-	-- end
+	-- reduce gravity if shooting sideways
+	if (left or right) and self.movable.acceleration.y == 0 then
+		self.movable.maxVelocity.y = self.movable.defaultMaxVelocity.y/10
+	else
+		self.movable.maxVelocity.y = self.movable.defaultMaxVelocity.y
+	end
+
+	-- shooting
+	if left or right or up or down then
+		self.shooter.didShoot = true
+
+		local targetAngle = self.shootAngle
+
+		if right and not left then targetAngle = 0
+		elseif down and not up then targetAngle = 90
+		elseif left and not right then targetAngle = 180
+		elseif up and not down then targetAngle = 270
+		end
+
+		if left and up then
+			targetAngle = targetAngle + 45
+		elseif right and up then
+			targetAngle = targetAngle - 45
+		elseif left and down then
+			targetAngle = targetAngle + 45
+		elseif right and down then
+			targetAngle = targetAngle + 45
+		end
+
+		self.shootAngle = _.lerp(self.shootAngle, targetAngle, 10000 * dt)
+	else
+		self.shooter.didShoot = false
+	end
 end
 
 function Player:draw()
+end
+
+function Player:collisionFilter(other)
+	if self.shooter.didShoot and self.shootAngle == 270 and other.isOneWay then
+		return "cross"
+	end
+
+	if other.isBullet then
+		return "cross"
+	end
+
+	return Player.super.collisionFilter(self, other)
 end
 
 return Player

@@ -51,12 +51,17 @@ function GameObject:new(x, y, w, h)
 	self.isFlickering = false
 	self.flickerDelay = 0.05
 
-	-- used for collision filters in collisionSystem
-	-- if collides with entities with these tags, they will "slide"
-	self.collidableTags = {}
+	self.collidableTags = {
+		-- only collides with these tags, ignores the rest
+		only = {},
 
-	-- if collides with entities with these tags, they will "cross"
-	self.nonCollidableTags = {}
+		-- if collides with entities with these tags, they will "cross"
+		-- and call collide() function to collidees
+		cross = {},
+
+		-- no collision or trigger with these tags
+		none = {}
+	}
 
 	return self
 end
@@ -64,35 +69,43 @@ end
 function GameObject:update(dt)
 end
 
-function GameObject:getMiddlePosition()
-	return self.pos.x + self.width/2, self.pos.y + self.height/2
+function GameObject:draw(dt)
 end
 
 function GameObject:selfDestructIn(seconds)
 	timer.after(seconds, function() self.toRemove = true end)
 end
 
-function GameObject:distanceFrom(gameobject)
-	return _.distance(self.pos.x, self.pos.y, gameobject.pos.x, gameobject.pos.y)
+function GameObject:die()
+	self.toRemove = true
 end
 
-function GameObject:getNearbyEntities(distance, tag)
-	return scene:getNearbyEntitiesFromSource(self, distance, tag)
-end
-
-function GameObject:getNearestEntity(withDistance, tag)
-	return scene:getNearestEntityFromSource(self, withDistance, tag)
-end
-
--- function GameObject:collisionFilter(other)
-	-- for i,tag in ipairs(self.collidableTags) do
-	-- 	if other[tag] then return "slide" end
+function GameObject:collisionFilter(other)
+	-- for i,tag in ipairs(self.collidableTags.solid) do
+	-- 	if other[tag] then return "solid" end
 	-- end
 
-	-- for i,tag in ipairs(self.nonCollidableTags) do
-	-- 	if other[tag] then return "cross" end
-	-- end
--- end
+	for i,tag in ipairs(self.collidableTags.cross) do
+		if other[tag] then return "cross" end
+	end
+
+	-- if other.isSlope then return "cross" end
+	if self.isSolid then
+		if other.isSolid then return "slide" end
+		if other.isOneWay then return "onewayplatform" end
+	end
+
+	return "cross"
+end
+
+-- ====================
+-- UTILS
+-- ====================
+
+function GameObject:spark(duration)
+	self.isSpark = true
+	timer.after(duration or 0.03, function() self.isSpark = false end)
+end
 
 function GameObject:flicker(duration, blinkDelay)
 	self.isFlickering = true
@@ -115,6 +128,32 @@ function GameObject:blink()
 		self.isVisible = not self.isVisible
 		self:blink()
 	end)
+end
+
+function GameObject:getMiddlePosition()
+	return self.pos.x + self.width/2, self.pos.y + self.height/2
+end
+
+function GameObject:getOffsetPosition()
+	return self.pos.x + self.offset.x, self.pos.y + self.offset.y
+end
+
+function GameObject:distanceFrom(gameobject)
+	return _.distance(self.pos.x, self.pos.y, gameobject.pos.x, gameobject.pos.y)
+end
+
+function GameObject:getNearbyEntities(distance, tag)
+	return scene:getNearbyEntitiesFromSource(self, distance, tag)
+end
+
+function GameObject:getNearestEntity(withDistance, tag)
+	return scene:getNearestEntityFromSource(self, withDistance, tag)
+end
+
+function GameObject:setVelocityByAngle(angle, speed)
+	assert(self.movable, "GameObject has no movable component")
+	local magnitude = speed or self.movable.speed.x or self.movable.speed.y
+	self.movable.velocity.x, self.movable.velocity.y = _.vector(angle, magnitude)
 end
 
 return GameObject

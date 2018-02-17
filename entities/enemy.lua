@@ -2,39 +2,63 @@ local _ = require "lib.lume"
 local GameObject = require "alphonsus.gameobject"
 local Square = require "alphonsus.square"
 
-local Enemy = Square:extend()
+local Enemy = GameObject:extend()
+
+local KNOCKBACK_FORCE = 800
 
 function Enemy:new(x, y, color)
 	Enemy.super.new(self, x, y)
 	self.name = "Enemy"
 	self.isEnemy = true
 	self.tag = "enemy"
-	self.isSolid = false
-	self.isLayerYPos = false
 
 	self.layer = G.layers.enemy
 
-	self.movable = {
-		velocity = { x = 0, y = 0 },
-		acceleration = { x = 0, y = 0 },
-		drag = { x = 0, y = 0 },
-		maxVelocity = { x = 50, y = 50 },
-		speed = { x = 50, y = 50 } -- used to assign to acceleration
-	}
+	-- placeholder sprite
+	self.sprite = assets.redSquare
 
-	-- self.isMoveTowardsPosition = true
-	-- self.targetPosition = {
-	-- 	x = self.pos.x + 50,
-	-- 	y = self.pos.y - 50
-	-- }
+	-- enemy mechanics
+	self.hp = 1
+
+	self.bounce = 400
+
+	-- collider
+	self.collidableTags.cross = { "isPlayer", "isEnemy" }
+
+	self.collider = {
+		x = self.pos.x - self.offset.x,
+		y = self.pos.y + self.offset.y,
+		w = self.width,
+		h = self.height,
+		ox = -self.offset.x,
+		oy = -self.offset.y
+	}
 
 	self.color = color or {155,100,0}
 	return self
 end
 
-function Enemy:update(dt)
-	-- self:isMoveTowardsPosition()
-	-- self:moveTowardsPosition()
+function Enemy:collide(other, col)
+	-- knockback
+	if other.isBullet and self.bounce then
+		-- self.movable.velocity.x = KNOCKBACK_FORCE
+		local angle = math.rad(math.deg(other.angle) + _.random(0,0))
+		self:setVelocityByAngle(angle, self.bounce)
+	end
+end
+
+function Enemy:onHit(damage, collisionNormal)
+	self.hp = self.hp - damage
+
+	self:spark()
+
+	if self.hp <= 0 then
+		self:die()
+	end
+end
+
+function Enemy:die()
+	Enemy.super.die(self)
 end
 
 function Enemy:moveTowardsPosition()

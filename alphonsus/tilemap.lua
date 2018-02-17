@@ -41,12 +41,13 @@ function TileMap:new(mapPath, x, y, bumpWorld)
 							x = x-1,
 							y = y-1,
 							w = tile.width,
-							h = tile.height,
+							h = isOneWay and 1 or tile.height,
 						},
 						name = layer.name,
 						isOneWay = isOneWay,
 						isSolid = isSolid,
-						isSlope = isSlope
+						isSlope = isSlope,
+						isTile = true
 					}
 
 					if isOneWay or isSolid or isSlope then
@@ -69,7 +70,14 @@ function TileMap:new(mapPath, x, y, bumpWorld)
 		-- end
 	end
 
+	self.width = self.map.width * self.map.tilewidth
+	self.height = self.map.height * self.map.tileheight
+
 	return self
+end
+
+function TileMap:addBorderCollisions()
+	scene:addEntity()
 end
 
 function TileMap:update(dt)

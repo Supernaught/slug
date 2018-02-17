@@ -34,7 +34,11 @@ local platformerMovableSystem = System(
 		-- Apply drag if not accelerating
 		if accel.x == 0 and drag.x > 0 then
 			local sign = _.sign(vel.x)
-			vel.x = vel.x - drag.x * dt * sign
+			if e.friction then
+				vel.x = _.lerp(vel.x, 0, e.friction)
+			else
+				vel.x = vel.x - drag.x * dt * sign
+			end
 			if (vel.x < 0) ~= (sign < 0) then
 				vel.x = 0
 			end

@@ -9,7 +9,7 @@ local push = require "lib.push"
 local shack = require "lib.shack"
 local timer = require "lib.hump.timer"
 
-local assets = require "assets"
+assets = require "assets"
 
 local PlayState = require "playstate"
 local MenuState = require "menustate"
@@ -43,17 +43,10 @@ function love.load()
 		["zoomOut"] = {"2"},
 		["rotate"] = {"3"},
 
-		["1_left"] = {"a"},
-		["1_right"] = {"d"},
-		["1_down"] = {"s"},
-		["1_up"] = {"w"},
-		["1_shoot"]  = { "space", gamepad = { "a" }},
-
-		["2_left"] = {"left"},
-		["2_right"] = {"right"},
-		["2_down"] = {"down"},
-		["2_up"] = {"up"},
-		["2_shoot"]  = { "]", gamepad = { "a" } },
+		["1_left"] = {"left"},
+		["1_right"] = {"right"},
+		["1_down"] = {"down"},
+		["1_up"] = {"up"},
 	})
 
 	-- setup Gamestate

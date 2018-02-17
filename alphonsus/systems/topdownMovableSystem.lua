@@ -24,6 +24,7 @@ local System = require "lib.knife.system"
 local topdownMovableSystem = System(
 	{ "movable" },
 	function(movable, e, dt)		
+		if e.platformer then return end
 		local mov = movable
 		local vel, accel, maxVel, drag = mov.velocity, mov.acceleration, mov.maxVelocity, mov.drag
 

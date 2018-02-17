@@ -56,6 +56,8 @@ end
 -- target must be GameObject
 function Camera:startFollowing(target, ox, oy)
 	self.followTarget = target
+	self.pos.x = target.pos.x + (ox or target.offset.x or 0)
+	self.pos.y = target.pos.y + (oy or target.offset.y or 0)
 	self.offset.x = ox or 0
 	self.offset.y = oy or 0
 end
