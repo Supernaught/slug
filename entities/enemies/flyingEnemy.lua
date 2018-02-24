@@ -11,10 +11,10 @@ function FlyingEnemy:new(x, y)
 	self.tag = "FlyingEnemy"
 
 	-- enemy mechanics
-	self.hp = 200
+	self.hp = 5
 
 	-- movable
-	local speed = 250
+	local speed = 150
 	local maxVelocityX = 120
 	local maxVelocityY = 120
 	local dragX = math.abs(G.gravity)*2
@@ -28,7 +28,7 @@ function FlyingEnemy:new(x, y)
 		speed = { x = speed, y = speed }
 	}
 
-	self.speed = 250
+	self.speed = speed
 
 	self.followPlayer = true
 	self.followSpeed = 0.05
@@ -57,24 +57,23 @@ function FlyingEnemy:update(dt)
 end
 
 function FlyingEnemy:collide(other, col)
+	FlyingEnemy.super.collide(self, other, col)
 	-- knockback
-	if other.isBullet and self.bounce then
+	if other.isBullet and self.bounceForce > 0 then
 		local r = _.random(-30,30)
 		local angle = math.rad(math.deg(other.angle) + r)
 		local d = self:distanceFrom(self.player)
-		local bounceForce = self.bounce
+		local bounceMultiplier = 1
 
 		if d > 100 then
-			bounceForce = self.bounce/6
+			bounceMultiplier = bounceMultiplier/6
 		elseif d > 50 then
-			bounceForce = self.bounce/4
+			bounceMultiplier = bounceMultiplier/4
 		else
-			bounceForce = self.bounce/3
+			bounceMultiplier = bounceMultiplier/3
 		end
 
-		self:setVelocityByAngle(angle, bounceForce)
-		self.followPlayer = false
-		timer.after(0.2, function() self.followPlayer = true end)
+		self:bounce(angle, bounceMultiplier, 30)
 	end
 end
 

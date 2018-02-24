@@ -1,6 +1,8 @@
 local _ = require "lib.lume"
+local timer = require "lib.hump.timer"
 local GameObject = require "alphonsus.gameobject"
 local Square = require "alphonsus.square"
+local Circle = require "alphonsus.circle"
 
 local Enemy = GameObject:extend()
 
@@ -19,8 +21,8 @@ function Enemy:new(x, y, color)
 
 	-- enemy mechanics
 	self.hp = 1
-
-	self.bounce = 400
+	self.bounceForce = 400
+	self.damage = 1
 
 	-- collider
 	self.collidableTags.cross = { "isPlayer", "isEnemy" }
@@ -38,12 +40,18 @@ function Enemy:new(x, y, color)
 	return self
 end
 
+function Enemy:bounce(angle, forceMultipler, random)
+	local angle = math.rad(math.deg(angle) + _.random(-(random or 0), random or 0))
+	self:setVelocityByAngle(angle, self.bounceForce * (forceMultipler or 1))
+	self.followPlayer = false
+	timer.after(0.2, function() self.followPlayer = true end)
+end
+
 function Enemy:collide(other, col)
 	-- knockback
-	if other.isBullet and self.bounce then
-		-- self.movable.velocity.x = KNOCKBACK_FORCE
-		local angle = math.rad(math.deg(other.angle) + _.random(0,0))
-		self:setVelocityByAngle(angle, self.bounce)
+	if other.isPlayer then
+		other:onHit(1)
+		if self.bounceForce > 0 then self:bounce(other.angle, 2) end
 	end
 end
 
@@ -58,6 +66,12 @@ function Enemy:onHit(damage, collisionNormal)
 end
 
 function Enemy:die()
+	local size = _.random(15,20)
+	local c = Circle(self.pos.x, self.pos.y, size, size)
+	c.layer = G.layers.explosion
+	c:selfDestructIn(0.05)
+	scene:addEntity(c)
+
 	Enemy.super.die(self)
 end
 

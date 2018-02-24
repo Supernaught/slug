@@ -227,4 +227,8 @@ function Player:collisionFilter(other)
 	return Player.super.collisionFilter(self, other)
 end
 
+function Player:onHit(damage)
+	print(damage)
+end
+
 return Player
