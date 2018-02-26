@@ -1,4 +1,4 @@
-ps = {
+local PlayerTrail = {
 	colors = {82, 127, 57, 255},
 	particleLifetime = {0.2, 2},
 	direction = 1.5*3.14,
@@ -11,4 +11,4 @@ ps = {
 	insertMode = 'random'
 }
 
-return ps
+return PlayerTrail

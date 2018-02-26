@@ -1,6 +1,6 @@
-local _ = require "lib.lume"
+local Enemy = require "entities.Enemy"
+
 local timer = require "lib.hump.timer"
-local Enemy = require "entities.enemy"
 
 local FlyingEnemy = Enemy:extend()
 

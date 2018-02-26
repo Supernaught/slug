@@ -1,21 +1,16 @@
 local Scene = require "alphonsus.scene"
 local Input = require "alphonsus.input"
-local GameObject = require "alphonsus.gameobject"
+local GameObject = require "alphonsus.entities.GameObject"
+local TileMap = require "alphonsus.entities.TileMap"
+
+local Player = require "entities.Player"
+local FlyingEnemy = require "entities.enemies.FlyingEnemy"
 
 local PaletteSwitcher = require 'lib/PaletteSwitcher'
 local bump = require "lib.bump"
 local shack = require "lib.shack"
-local _ = require "lib.lume"
 local moonshine = require "lib.moonshine"
 local Gamestate = require "lib.hump.gamestate"
-
-local Square = require "alphonsus.square"
-local Player = require "entities.player"
-local Bullet = require "entities.bullet"
-local Enemy = require "entities.enemy"
-local GroundEnemy = require "entities.enemies.groundEnemy"
-local FlyingEnemy = require "entities.enemies.flyingEnemy"
-local TileMap = require "alphonsus.tilemap"
 
 local PlayState = Scene:extend()
 
@@ -24,6 +19,10 @@ local player = {}
 local player2 = {}
 local middlePoint = {}
 local tileMap = {}
+
+function PlayState:new()
+	PlayState.super.new(self)
+end
 
 -- helper function
 function getMiddlePoint(pos1, pos2)

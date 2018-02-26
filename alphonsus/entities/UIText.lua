@@ -1,7 +1,6 @@
-GameObject = require "alphonsus.gameobject"
+local GameObject = require "alphonsus.entities.GameObject"
 
 local UIText = GameObject:extend()
-local assets =  require "assets"
 
 function UIText:new(x, y, text, width, align, fontSize, font, fontScale)
 	UIText.super.new(self, x or 0, y or 0)

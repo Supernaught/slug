@@ -1,5 +1,9 @@
 io.stdout:setvbuf("no")
+
+_ = require "lib.lume"
 tlog = require "alphonsus.tlog"
+utils = require "alphonsus.utils"
+assets = require "assets"
 
 local Input = require "alphonsus.input"
 
@@ -9,13 +13,18 @@ local push = require "lib.push"
 local shack = require "lib.shack"
 local timer = require "lib.hump.timer"
 
-assets = require "assets"
-
-local PlayState = require "playstate"
-local MenuState = require "menustate"
 
 function love.load()
 	love.mouse.setVisible(false)
+
+	-- load entities
+    local entityFiles = {}
+    -- recursiveEnumerate('assets', entityFiles)
+    -- requireFiles(entityFiles)
+
+    -- load states
+	local PlayState = require "states.PlayState"
+	local MenuState = require "states.MenuState"
 
 	-- setup push screen
 	local windowWidth, windowHeight

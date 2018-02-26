@@ -1,5 +1,4 @@
-local GameObject = require "alphonsus.gameobject"
-local assets = require "assets"
+-- local GameObject = require "alphonsus.gameobject"
 local anim8 = require "lib.anim8"
 
 local Sprite = GameObject:extend()

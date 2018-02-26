@@ -1,7 +1,6 @@
-GameObject = require "alphonsus.gameobject"
+local GameObject = require "alphonsus.entities.GameObject"
 
 local Particles = GameObject:extend()
-local assets =  require "assets"
 
 function Particles:new(x, y, sprite)
 	Particles.super.new(self, x, y)

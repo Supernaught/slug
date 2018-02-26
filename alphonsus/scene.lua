@@ -1,16 +1,17 @@
 -- 
 -- Scene.lua
--- a game scene (like a Unity scene)
+-- a game scene/room/screen
 -- 
 
-local _ = require "lib.lume"
 local Object = require "lib.classic"
 local shack = require "lib.shack"
 local push = require "lib.push"
 local gamera = require "lib.gamera"
 local bump = require "lib.bump"
 
-local assets = require "assets"
+local Camera = require "alphonsus.camera"
+local Input = require "alphonsus.input"
+
 local removeSystem = require "alphonsus.systems.removeSystem"
 local updateSystem = require "alphonsus.systems.updateSystem"
 local drawSystem = require "alphonsus.systems.drawSystem"
@@ -21,8 +22,6 @@ local moveTowardsAngleSystem = require "alphonsus.systems.moveTowardsAngleSystem
 local moveTowardsPositionSystem = require "alphonsus.systems.moveTowardsPositionSystem"
 local shooterSystem = require "alphonsus.systems.shooterSystem"
 
-local Camera = require "alphonsus.camera"
-local Input = require "alphonsus.input"
 
 local Scene = Object:extend()
 

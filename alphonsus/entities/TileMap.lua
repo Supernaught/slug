@@ -1,9 +1,6 @@
-GameObject = require "alphonsus.gameobject"
-
 local sti = require "lib.sti"
-
+local GameObject = require "alphonsus.entities.GameObject"
 local TileMap = GameObject:extend()
-local assets =  require "assets"
 
 function TileMap:new(mapPath, x, y, bumpWorld)
 	TileMap.super.new(self, x or 0, y or 0)

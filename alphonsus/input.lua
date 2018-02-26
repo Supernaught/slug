@@ -1,4 +1,3 @@
-local _ = require "lib.lume"
 local Input = {}
 
 Input.map = {}

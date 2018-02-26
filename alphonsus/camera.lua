@@ -1,10 +1,8 @@
-local _ = require "lib.lume"
 local Object = require "lib.classic"
 local gamera = require "lib.gamera"
 local shack = require "lib.shack"
 
 local Camera = Object:extend()
-local assets = require "assets"
 
 function Camera:new(followSpeed, zoomSpeed)
 	if G.fullscreen then

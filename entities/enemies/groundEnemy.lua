@@ -1,6 +1,3 @@
-local _ = require "lib.lume"
-local Enemy = require "entities.enemy"
-
 local GroundEnemy = Enemy:extend()
 
 function GroundEnemy:new(x, y)

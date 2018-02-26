@@ -1,8 +1,8 @@
-local _ = require "lib.lume"
+local GameObject = require "alphonsus.entities.GameObject"
+local Square = require "alphonsus.entities.Square"
+local Circle = require "alphonsus.entities.Circle"
+
 local timer = require "lib.hump.timer"
-local GameObject = require "alphonsus.gameobject"
-local Square = require "alphonsus.square"
-local Circle = require "alphonsus.circle"
 
 local Enemy = GameObject:extend()
 

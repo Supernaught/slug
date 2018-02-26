@@ -16,7 +16,6 @@
 --
 --
 
-local _ = require "lib.lume"
 local vector = require "lib.hump.vector-light"
 local Vec = require "lib.hump.vector"
 local System = require "lib.knife.system"

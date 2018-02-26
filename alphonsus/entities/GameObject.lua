@@ -1,9 +1,7 @@
-local _ = require "lib.lume"
 local Object = require "lib.classic"
 local timer = require "lib.hump.timer"
 
 local GameObject = Object:extend()
-local assets = require "assets"
 
 Direction = {
 	up = 'up',

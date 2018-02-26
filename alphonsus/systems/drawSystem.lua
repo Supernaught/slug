@@ -4,7 +4,6 @@
 --
 -- calls the entity's draw() function
 --
-local assets = require "assets"
 
 local System = require "lib.knife.system"
 

@@ -1,12 +1,10 @@
-local GameObject = require "alphonsus.gameobject"
-local Input = require "alphonsus.input"
-local Particles = require "alphonsus.particles"
-local anim8 = require "lib.anim8"
-local _ = require "lib.lume"
-local assets = require "assets"
+local GameObject = require "alphonsus.entities.GameObject"
+local Particles = require "alphonsus.entities.Particles"
 
-local Circle = require "alphonsus.circle"
-local Bullet = require "entities.bullet"
+local Bullet = require "entities.Bullet"
+
+local Input = require "alphonsus.input"
+local anim8 = require "lib.anim8"
 
 local Player = GameObject:extend()
 
@@ -77,7 +75,7 @@ function Player:new(x, y, playerNo)
 
 	-- particles
 	self.trailPs = Particles()
-	local playerTrail = require "entities.particles.playerTrail"
+	local playerTrail = require "assets/particles/PlayerTrail"
 	if self.playerNo == 2 then playerTrail.colors = {82, 127, 157, 255} end
 	self.trailPs:load(playerTrail)
 	-- scene:addEntity(self.trailPs)
@@ -152,7 +150,6 @@ end
 
 function Player:moveControls(dt)
 	local jump = Input.wasKeyPressed('space')
-	if jump then self:jump() end
 
 	local left = Input.isDown(self.playerNo .. '_left') or Input.isAxisDown(self.playerNo, 'leftx', '<')
 	local right = Input.isDown(self.playerNo .. '_right') or Input.isAxisDown(self.playerNo, 'leftx', '>')

@@ -1,15 +1,12 @@
-local assets =  require "assets"
-
-local Scene = require "alphonsus.scene"
 local Input = require "alphonsus.input"
-local UIText = require "alphonsus.uitext"
-local GameObject = require "alphonsus.gameobject"
+local Scene = require "alphonsus.Scene"
 
-local Gamestate = require "lib.hump.gamestate"
-local shack = require "lib.shack"
+local UIText = require "alphonsus.entities.UIText"
+
+-- local Gamestate = require "lib.hump.gamestate"
+-- local shack = require "lib.shack"
 local flux = require "lib.flux"
 
-local PlayState = require "playstate"
 local MenuState = Scene:extend()
 
 function MenuState:enter()
@@ -21,7 +18,6 @@ function MenuState:enter()
 	self:addEntity(titleText)
 
 	flux.to(titleText.pos, 1, {y = G.height * 0.25})
-	-- flux.to(titleText, 1, {fontScale = 1}):ease("backout")
 end
 
 function MenuState:stateUpdate(dt)

@@ -1,4 +1,4 @@
-local GameObject = require "alphonsus.gameobject"
+local GameObject = require "alphonsus.entities.GameObject"
 
 local Circle = GameObject:extend()
 
