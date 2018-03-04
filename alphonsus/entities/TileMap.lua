@@ -2,16 +2,20 @@ local sti = require "lib.sti"
 local GameObject = require "alphonsus.entities.GameObject"
 local TileMap = GameObject:extend()
 
-function TileMap:new(mapPath, x, y, bumpWorld)
-	TileMap.super.new(self, x or 0, y or 0)
+function TileMap:new(mapPath, xOffset, yOffset, bumpWorld)
+	TileMap.super.new(self, xOffset or 0, yOffset or 0)
 	self.name = "TileMap"
 	self.isTileMap = true
 
+	self.isDrawing = true
+
 	self.bumpWorld = bumpWorld
+
+	self.mapPath = mapPath
 
 	-- self.map = sti("maps/plain.lua")
 	-- self.map = sti("maps/plain2.lua")
-	local map = sti(mapPath, { "bump" })
+	local map = sti(mapPath, { "bump" }, xOffset or 0, yOffset or 0)
 	self.map = map
 	self.map:bump_init(self.bumpWorld)
 	self.map:resize(1000,1000)
@@ -26,17 +30,21 @@ function TileMap:new(mapPath, x, y, bumpWorld)
 				end
 			end
 		elseif layer.data then
-			local isOneWay = layer.properties.isOneWay
-			local isSolid = layer.properties.isSolid
-			local isSlope = layer.properties.isSlope
+			local isOneWayLayer = layer.properties.isOneWay
+			local isSolidLayer = layer.properties.isSolid
+			local isSlopeLayer = layer.properties.isSlope
 
 			for y, tiles in ipairs(layer.data) do
 				for x, tile in pairs(tiles) do
+					local isOneWay = layer.properties.isOneWay or tile.properties.isOneWay
+					local isSolid = not isOneWay and (layer.properties.isSolid or tile.properties.isSolid)
+					local isSlope = layer.properties.isSlope or tile.properties.isSlope
+
 					local xpos, ypos = (x-1) * map.tilewidth, (y-1) * map.tileheight
 					local bumpObject = {
 						collider = {
-							x = x-1,
-							y = y-1,
+							x = x-1 + (xOffset or 0)/16,
+							y = y-1 + (yOffset or 0)/16,
 							w = tile.width,
 							h = isOneWay and 1 or tile.height,
 						},
@@ -48,7 +56,7 @@ function TileMap:new(mapPath, x, y, bumpWorld)
 					}
 
 					if isOneWay or isSolid or isSlope then
-						bumpWorld:add(bumpObject, xpos, ypos, tile.width, tile.height)
+						bumpWorld:add(bumpObject, xpos + (xOffset or 0), ypos + (yOffset or 0), tile.width, tile.height)
 					end
 				end
 			end
@@ -81,6 +89,8 @@ function TileMap:update(dt)
 end
 
 function TileMap:draw()
+	if not self.isDrawing then return end
+
 	local camScale = scene.camera.cam:getScale()
 	local l,t = scene.camera.cam:getVisible()
 	self.map:draw(math.floor(-l), math.floor(-t), camScale, camScale)

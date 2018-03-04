@@ -1,10 +1,10 @@
 local Scene = require "alphonsus.scene"
 local Input = require "alphonsus.input"
 local GameObject = require "alphonsus.entities.GameObject"
-local TileMap = require "alphonsus.entities.TileMap"
 
 local Player = require "entities.Player"
 local FlyingEnemy = require "entities.enemies.FlyingEnemy"
+local Level = require "entities.Level"
 
 local PaletteSwitcher = require 'lib/PaletteSwitcher'
 local bump = require "lib.bump"
@@ -15,45 +15,42 @@ local Gamestate = require "lib.hump.gamestate"
 local PlayState = Scene:extend()
 
 -- entities
-local player = {}
-local player2 = {}
 local middlePoint = {}
-local tileMap = {}
 
 function PlayState:new()
 	PlayState.super.new(self)
 end
 
 -- helper function
-function getMiddlePoint(pos1, pos2)
-	return (pos1.x + pos2.x)/2 + player.width/2, (pos1.y + pos2.y)/2 - player.width/2
-end
+-- function getMiddlePoint(pos1, pos2)
+-- 	return (pos1.x + pos2.x)/2 + self.player.width/2, (pos1.y + pos2.y)/2 - self.player.width/2
+-- end
 
 function PlayState:enter()
 	PlayState.super.enter(self)
+
+	self.player = {}
+
 	scene = self
 	self.bumpWorld = bump.newWorld()
 
 	self.bgColor = {20, 20, 20}
 
-	-- setup tile map
-	self.tileMap = TileMap("assets/maps/test.lua", nil, nil, self.bumpWorld)
-	self:addEntity(self.tileMap)
-
 	-- setup player
-	player = Player(self.tileMap.width/2, 50, 1)
-	self:addEntity(player)
+	self.player = Player(60, 60, 1)
+	self:addEntity(self.player)
+
+	-- setup level
+	self.level = Level(self.player)
+	self:addEntity(self.level)
 
 	-- add sample enenmy
-	self:addEntity(FlyingEnemy(-10, 100))
-	-- self:addEntity(FlyingEnemy(self.tileMap.width+16, 100))
-	-- self:addEntity(GroundEnemy(80, 100))
+	-- self:addEntity(FlyingEnemy(-10, 100))
 
 	-- setup camera
-	self.camera:startFollowing(player)
+	-- self.camera:startFollowing(self.player)
 	self.camera.followSpeed = 5
-	-- print(tileMap.width * G.tile_size, tileMap.height * G.tile_size)
-	self.camera.cam:setWorld(0,0,(self.tileMap.map.width) * G.tile_size, self.tileMap.map.height * G.tile_size)
+	-- self.camera.cam:setWorld(0,0,(self.level.tileMap.map.width) * G.tile_size, self.level.tileMap.map.height * G.tile_size)
 
 	-- setup shaders
 	PaletteSwitcher.init('assets/img/palettes.png', 'alphonsus/shaders/palette.fs');

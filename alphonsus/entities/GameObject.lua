@@ -12,6 +12,7 @@ Direction = {
 
 function GameObject:new(x, y, w, h)
 	-- gameobject
+	self.uuid = _.uuid()
 	self.name = "GameObject"
 	self.tag = ""
 	self.isAlive = true

@@ -61,12 +61,13 @@ function Camera:startFollowing(target, ox, oy)
 end
 
 function Camera:update(dt)
-	local t = self.followTarget
-	local targetX = (t and (t.pos.x + t.offset.x) or 0) + self.offset.x
-	local targetY = (t and (t.pos.y + t.offset.y) or 0) + self.offset.y
-
-	self.pos.x = _.lerp(self.pos.x, targetX, dt * self.followSpeed)
-	self.pos.y = _.lerp(self.pos.y, targetY, dt * self.followSpeed)
+	if self.followTarget then
+		local t = self.followTarget
+		local targetX = (t and (t.pos.x + t.offset.x) or 0) + self.offset.x
+		local targetY = (t and (t.pos.y + t.offset.y) or 0) + self.offset.y
+		self.pos.x = _.lerp(self.pos.x, targetX, dt * self.followSpeed)
+		self.pos.y = _.lerp(self.pos.y, targetY, dt * self.followSpeed)
+	end
 
 	self.cam:setPosition(math.floor(self.pos.x), math.floor(self.pos.y))
 

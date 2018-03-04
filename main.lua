@@ -7,24 +7,21 @@ assets = require "assets"
 
 local Input = require "alphonsus.input"
 
+local flux = require "lib.flux"
 local Gamestate = require "lib.hump.gamestate"
 local gamera = require "lib.gamera"
 local push = require "lib.push"
 local shack = require "lib.shack"
 local timer = require "lib.hump.timer"
 
+local PlayState = require "states.PlayState"
+local MenuState = require "states.MenuState"
 
 function love.load()
 	love.mouse.setVisible(false)
 
 	-- load entities
     local entityFiles = {}
-    -- recursiveEnumerate('assets', entityFiles)
-    -- requireFiles(entityFiles)
-
-    -- load states
-	local PlayState = require "states.PlayState"
-	local MenuState = require "states.MenuState"
 
 	-- setup push screen
 	local windowWidth, windowHeight
@@ -62,13 +59,14 @@ function love.load()
 	Gamestate.registerEvents()
 	playState = PlayState()
 	menuState = MenuState()
-	Gamestate.switch(menuState)
+	-- Gamestate.switch(menuState)
 	Gamestate.switch(playState)
 end
 
 function love.update(dt)
 	shack:update(dt)
 	timer.update(dt)
+	flux.update(dt)
 end
 
 function love.draw()
