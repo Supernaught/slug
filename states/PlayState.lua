@@ -9,7 +9,6 @@ local Level = require "entities.Level"
 local PaletteSwitcher = require 'lib/PaletteSwitcher'
 local bump = require "lib.bump"
 local shack = require "lib.shack"
-local moonshine = require "lib.moonshine"
 local Gamestate = require "lib.hump.gamestate"
 
 local PlayState = Scene:extend()
@@ -20,11 +19,6 @@ local middlePoint = {}
 function PlayState:new()
 	PlayState.super.new(self)
 end
-
--- helper function
--- function getMiddlePoint(pos1, pos2)
--- 	return (pos1.x + pos2.x)/2 + self.player.width/2, (pos1.y + pos2.y)/2 - self.player.width/2
--- end
 
 function PlayState:enter()
 	PlayState.super.enter(self)
@@ -47,18 +41,8 @@ function PlayState:enter()
 	-- add sample enenmy
 	-- self:addEntity(FlyingEnemy(-10, 100))
 
-	-- setup camera
-	-- self.camera:startFollowing(self.player)
-	self.camera.followSpeed = 5
-	-- self.camera.cam:setWorld(0,0,(self.level.tileMap.map.width) * G.tile_size, self.level.tileMap.map.height * G.tile_size)
-
 	-- setup shaders
 	PaletteSwitcher.init('assets/img/palettes.png', 'alphonsus/shaders/palette.fs');
-	sepiaShader = love.graphics.newShader('alphonsus/shaders/sepia.fs')
-	bloomShader = love.graphics.newShader('alphonsus/shaders/bloom.fs')
-
-	effect = moonshine(moonshine.effects.filmgrain)
-	-- effect.filmgrain.size = 2
 end
 
 function PlayState:stateUpdate(dt)
@@ -74,19 +58,12 @@ function PlayState:stateUpdate(dt)
 end
 
 function PlayState:draw()
-	-- moonshine shader
-	-- effect(function()
-		-- PlayState.super.draw(self)
-	-- end)
-
 	-- palette switcher
 	-- PaletteSwitcher.set();
-	-- love.graphics.setShader(bloomShader)
 
 	PlayState.super.draw(self)
 
 	-- PaletteSwitcher.unset()
-	-- love.graphics.setShader()
 end
 
 return PlayState
