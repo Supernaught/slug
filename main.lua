@@ -59,8 +59,8 @@ function love.load()
 	Gamestate.registerEvents()
 	playState = PlayState()
 	menuState = MenuState()
-	-- Gamestate.switch(menuState)
-	Gamestate.switch(playState)
+	Gamestate.switch(menuState)
+	-- Gamestate.switch(playState)
 end
 
 function love.update(dt)
