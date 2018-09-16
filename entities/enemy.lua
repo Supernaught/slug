@@ -51,7 +51,7 @@ function Enemy:collide(other, col)
 	-- knockback
 	if other.isPlayer then
 		other:onHit(1)
-		if self.bounceForce > 0 then self:bounce(other.angle, 2) end
+		-- if self.bounceForce > 0 then self:bounce(other.angle, 2) end
 	end
 end
 

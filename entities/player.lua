@@ -19,24 +19,27 @@ function Player:new(x, y, playerNo)
 
 	-- slugcaster mechanics
 	self.shootAngle = 0
+	self.tileSize = 12
+	self.width = self.tileSize
+	self.height = self.tileSize
 
 	-- draw/sprite component
 	self.layer = G.layers.player
 	self.isLayerYPos = true
 	self.sprite = assets.player
 	self.flippedH = false
-	self.offset = { x = G.tile_size/2, y = G.tile_size/2 }
-	local g = anim8.newGrid(G.tile_size, G.tile_size, self.sprite:getWidth(), self.sprite:getHeight())
-	self.idleAnimation = anim8.newAnimation(g('1-3',1), 0.1)
+	self.offset = { x = self.tileSize/2, y = self.tileSize/2 }
+	local g = anim8.newGrid(self.tileSize, self.tileSize, self.sprite:getWidth(), self.sprite:getHeight())
+	self.idleAnimation = anim8.newAnimation(g('1-5',3), 0.1)
 	self.animation = self.idleAnimation
 
 	-- physics
 	self.isSolid = true
 
 	-- platformer setup
-	local speed = 250
+	local speed = 200
 	local maxVelocityX = 140
-	local maxVelocityY = 120
+	local maxVelocityY = 100
 
 
 	-- self.friction = 10
@@ -95,7 +98,7 @@ function Player:new(x, y, playerNo)
 	-- shooter
 	self.shooter = {
 		canAtk = true,
-		atkDelay = 0.1,
+		atkDelay = 0.12,
 		didShoot = false,
 	}
 	
@@ -225,7 +228,7 @@ function Player:collisionFilter(other)
 end
 
 function Player:onHit(damage)
-	print(damage)
+	-- print("onhit"..damage)
 end
 
 return Player

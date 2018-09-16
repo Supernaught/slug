@@ -12,19 +12,23 @@ function Bullet:new(x, y, angle, speed, owner)
 	self.name = "Bullet"
 	self.isBullet = true
 	self.isSolid = false
+
+	self.width = 12
+	self.height = 12
+
 	-- self.angle = angle or 90
 	self.angle = math.rad((angle or 90) + _.random(-5,5))
 	self.layer = G.layers.bullet
 	self.isLayerYPos = false
 
 	local gapX, gapY = _.vector(self.angle, _.random(10,15))
-	self.pos.x = self.pos.x + gapX
-	self.pos.y = self.pos.y + gapY
+	self.pos.x = self.pos.x --+ gapX
+	self.pos.y = self.pos.y --+ gapY
 
 	-- bullet mechanics
 	self.damage = 1
 
-	local speed = speed or 250
+	local speed = speed or 230
 
 	self.owner = owner
 	self.tag = self.owner.tag
@@ -45,10 +49,7 @@ function Bullet:new(x, y, angle, speed, owner)
 
 	self:setVelocityByAngle(self.angle, speed)
 
-	self.width = 16
-	self.height = 8
-
-	self.offset = { x = 8, y = 8 }
+	self.offset = { x = self.width/2, y = self.height/2 }
 
 	-- collider
 	self.collider = {

@@ -1,7 +1,7 @@
 G = {
   title = "Game Title",
   width = 320,
-  height = 192,
+  height = 180,
   scale = 3,
   tile_size = 16,
   fullscreen = true,

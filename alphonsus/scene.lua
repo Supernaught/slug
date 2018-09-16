@@ -129,9 +129,23 @@ end
 -- ====================================
 --          HELPER FUNCTIONS
 -- ====================================
-function Scene:getObject(tag)
+function Scene:getObjectByName(name)
+	local result = _.filter(self.entities, function(e)
+		return e.name == name
+	end)
+
+	return result[1] and result[1] or {}
+end
+
+function Scene:getObjectsByTag(tag)
 	return _.filter(self.entities, function(e)
-		return e[tag] == true
+		return e.tag:lower() == tag:lower()
+	end)
+end
+
+function Scene:getObjects(isWhat)
+	return _.filter(self.entities, function(e)
+		return e[isWhat] == true
 	end)
 end
 

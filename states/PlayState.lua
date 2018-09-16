@@ -3,6 +3,7 @@ local Input = require "alphonsus.input"
 local GameObject = require "alphonsus.entities.GameObject"
 
 local Player = require "entities.Player"
+local Jellyfish = require "entities.enemies.Jellyfish"
 local FlyingEnemy = require "entities.enemies.FlyingEnemy"
 local Level = require "entities.Level"
 
@@ -40,6 +41,7 @@ function PlayState:enter()
 
 	-- add sample enenmy
 	-- self:addEntity(FlyingEnemy(-10, 100))
+	self:addEntity(Jellyfish(100, 100))
 
 	-- setup shaders
 	PaletteSwitcher.init('assets/img/palettes.png', 'alphonsus/shaders/palette.fs');
